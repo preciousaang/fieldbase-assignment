@@ -1,10 +1,10 @@
 import React from "react";
-import styled from "styled-components";
-import { Field, Form, Formik } from "formik";
 import * as yup from "yup";
 import api from "../api/axios";
 import { converApiErrors } from "../shared/utils";
 import { useNavigate } from "react-router-dom";
+import { Error, FGroup, FLabel, Header, IField } from "../shared/styledComps";
+import { Form, Formik } from "formik";
 
 function AddGateway() {
   const navigate = useNavigate();
@@ -54,23 +54,6 @@ function AddGateway() {
 }
 
 export default AddGateway;
-
-const Header = styled.h2`
-  color: red;
-`;
-
-const IField = styled(Field)``;
-
-const FGroup = styled.div`
-  display: block;
-  margin: 15px 0;
-`;
-const FLabel = styled.label`
-  display: block;
-`;
-const Error = styled.p`
-  color: red;
-`;
 
 const schema = yup.object().shape({
   name: yup.string().required("Required Field"),

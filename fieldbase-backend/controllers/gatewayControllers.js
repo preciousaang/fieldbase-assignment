@@ -22,3 +22,5 @@ exports.single = (req, res) => {
     return res.json({ gateway });
   });
 };
+
+exports.addPeripheral = (req, res) => {};
