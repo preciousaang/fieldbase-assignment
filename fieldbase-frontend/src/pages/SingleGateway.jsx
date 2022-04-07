@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import styled from "styled-components";
+
 import api from "../api/axios";
 import AddPeripheral from "../components/AddPeripheral";
 import moment from "moment";
+import { ResponsiveTable, Table } from "../shared/styledComps";
 
 function SingleGateway() {
   const [gateway, setGateway] = useState(null);
@@ -11,6 +12,28 @@ function SingleGateway() {
   const [addPeripheral, setAddPeripheral] = useState(false);
   const initaliateAddPeripheral = () => {
     setAddPeripheral(true);
+  };
+  const changeStatus = (id) => {
+    api
+      .post("/gateway/" + params.id + "/update-peripheral", { id })
+      .then((res) => {
+        setGateway(res?.data?.gateway);
+      })
+      .catch((err) => {
+        console.log(err.response);
+      });
+  };
+  const removePeripheral = (id) => {
+    if (window.confirm("Are you sure?")) {
+      api
+        .post("/gateway/" + params.id + "/remove-peripheral", { id })
+        .then((res) => {
+          setGateway(res?.data?.gateway);
+        })
+        .catch((err) => {
+          console.log(err.response);
+        });
+    }
   };
   const cancelPeripheralAdd = () => {
     setAddPeripheral(false);
@@ -50,7 +73,6 @@ function SingleGateway() {
   }
   return (
     <div>
-      <h2>{gateway?.name}</h2>
       <Table>
         <tbody>
           <tr>
@@ -87,44 +109,53 @@ function SingleGateway() {
           }}
         />
       )}
-      <Table>
-        <thead>
-          <tr>
-            <th>UID</th>
-            <th>Vendor</th>
-            <th>Date created</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {gateway?.devices?.map((device) => (
-            <tr key={device._id}>
-              <td>{device?.uid}</td>
-              <td>{device?.vendor}</td>
-              <td>
-                {device?.createdAt &&
-                  moment(device?.createdAt).format("MMMM Do YYYY, h:mm:ss a")}
-              </td>
-              <td>{device?.status}</td>
+      <ResponsiveTable>
+        <Table>
+          <thead>
+            <tr>
+              <th>UID</th>
+              <th>Vendor</th>
+              <th>Date created</th>
+              <th>Status</th>
+              <th>Action</th>
             </tr>
-          ))}
-        </tbody>
-      </Table>
+          </thead>
+          <tbody>
+            {gateway?.devices?.map((device) => (
+              <tr key={device._id}>
+                <td>{device?.uid}</td>
+                <td>{device?.vendor}</td>
+                <td>
+                  {device?.createdAt &&
+                    moment(device?.createdAt).format("MMMM Do YYYY, h:mm:ss a")}
+                </td>
+                <td>{device?.status}</td>
+                <td>
+                  <button
+                    onClick={() => changeStatus(device?._id)}
+                    type="button"
+                  >
+                    {device.status === "offline" ? (
+                      <>Set online</>
+                    ) : (
+                      <>Set offline</>
+                    )}
+                  </button>
+                  &nbsp;
+                  <button
+                    onClick={() => removePeripheral(device._id)}
+                    type="button"
+                  >
+                    Remove from gateway
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </ResponsiveTable>
     </div>
   );
 }
 
 export default SingleGateway;
-
-const Table = styled.table`
-  border: 1px solid black;
-  tbody > tr > td {
-    border: 1px solid black;
-  }
-  tbody > tr > td:first-child {
-    font-weight: bold;
-  }
-  thead > tr > th {
-    border: 1px solid black;
-  }
-`;

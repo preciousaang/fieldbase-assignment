@@ -13,7 +13,14 @@ exports.add = (req, res) => {
   );
 };
 
-exports.index = (req, res) => {};
+exports.index = (req, res) => {
+  Gateway.find({}, function (err, gateways) {
+    if (err) {
+      return res.status(400).json("Error fetching gateways");
+    }
+    return res.json({ gateways });
+  });
+};
 
 exports.single = (req, res) => {
   Gateway.findById(req.params.id, function (err, gateway) {
@@ -48,5 +55,31 @@ exports.addPeripheral = (req, res) => {
         .status(400)
         .json({ message: "You have reached the maximum of 10 devices" });
     }
+  });
+};
+
+exports.updatePeripheral = (req, res) => {
+  Gateway.findById(req.params.id, async function (err, gateway) {
+    if (err) {
+      return res.status(404).json({ message: "Gateway not found" });
+    }
+    if (gateway.devices.id(req.body.id).status === "online") {
+      gateway.devices.id(req.body.id).status = "offline";
+    } else {
+      gateway.devices.id(req.body.id).status = "online";
+    }
+    await gateway.save();
+    return res.json({ gateway });
+  });
+};
+
+exports.removePeripheral = (req, res) => {
+  Gateway.findById(req.params.id, async function (err, gateway) {
+    if (err) {
+      return res.status(404).json({ message: "Gateway not found" });
+    }
+    gateway.devices.id(req.body.id).remove();
+    await gateway.save();
+    return res.json({ gateway });
   });
 };
