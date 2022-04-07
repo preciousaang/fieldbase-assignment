@@ -1,0 +1,75 @@
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import styled from "styled-components";
+import api from "../api/axios";
+
+function SingleGateway() {
+  const [gateway, setGateway] = useState(null);
+  const [message, setMessage] = useState(null);
+  const params = useParams();
+  useEffect(() => {
+    const controller = new AbortController();
+    api
+      .get("/gateway/" + params.id, { signal: controller.signal })
+      .then((res) => {
+        setGateway(res.data.gateway);
+        setMessage(null);
+      })
+      .catch((err) => {
+        if (err?.response?.status === 404) {
+          setGateway(null);
+          setMessage("No gateway found");
+        }
+      });
+    return () => {
+      controller.abort();
+    };
+  }, [gateway, params]);
+  if (message) {
+    return (
+      <>
+        <h3>{message}</h3>
+      </>
+    );
+  }
+  if (!gateway) {
+    return (
+      <>
+        <h5>Loading......</h5>
+      </>
+    );
+  }
+  return (
+    <div>
+      <h2>{gateway?.name}</h2>
+      <Table>
+        <tbody>
+          <tr>
+            <td>Serial Number</td>
+            <td>{gateway?._id}</td>
+          </tr>
+          <tr>
+            <td>Name</td>
+            <td>{gateway?.name}</td>
+          </tr>
+          <tr>
+            <td>IP Address</td>
+            <td>{gateway?.address}</td>
+          </tr>
+        </tbody>
+      </Table>
+    </div>
+  );
+}
+
+export default SingleGateway;
+
+const Table = styled.table`
+  border: 1px solid black;
+  tbody > tr > td {
+    border: 1px solid black;
+  }
+  tbody > tr > td:first-child {
+    font-weight: bold;
+  }
+`;

@@ -2,9 +2,27 @@ import React from "react";
 import styled from "styled-components";
 import { Field, Form, Formik } from "formik";
 import * as yup from "yup";
+import api from "../api/axios";
+import { converApiErrors } from "../shared/utils";
+import { useNavigate } from "react-router-dom";
 
 function AddGateway() {
-  const onAddGateway = () => {};
+  const navigate = useNavigate();
+  const onAddGateway = ({ name, address }, actions) => {
+    api
+      .post("/add", { name, address })
+      .then((res) => {
+        alert("Ok");
+        actions.resetForm();
+        console.log(res?.data?.gateway);
+        navigate("/gateway/" + res.data.gateway._id);
+      })
+      .catch((err) => {
+        if (err.response.status === 422) {
+          actions.setErrors(converApiErrors(err.response.data.errors));
+        }
+      });
+  };
   return (
     <>
       <Header>Add Gateway</Header>
@@ -59,5 +77,5 @@ const schema = yup.object().shape({
   address: yup
     .string()
     .required("Required field")
-    .matches(/(^(\d{1,3}\.){3}(\d{1,3})$)/, "not a vaild regex"),
+    .matches(/(^(\d{1,3}\.){3}(\d{1,3})$)/, "not a vaild ip address"),
 });
