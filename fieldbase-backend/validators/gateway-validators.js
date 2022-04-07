@@ -35,7 +35,7 @@ exports.addGateway = async (req, res, next) => {
   }
 };
 
-exports.addPeripheral = async (req, res) => {
+exports.addPeripheral = async (req, res, next) => {
   await body("vendor").notEmpty().bail().withMessage("Required").run(req);
   await body("status")
     .isIn(["online", "offline"])

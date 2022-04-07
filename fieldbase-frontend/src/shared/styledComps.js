@@ -9,6 +9,7 @@ export const FLabel = styled.label`
 `;
 export const Error = styled.p`
   color: red;
+  font-size: 80%;
 `;
 
 export const Header = styled.h2`

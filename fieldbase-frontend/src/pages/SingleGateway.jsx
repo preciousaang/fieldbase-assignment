@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import api from "../api/axios";
 import AddPeripheral from "../components/AddPeripheral";
+import moment from "moment";
 
 function SingleGateway() {
   const [gateway, setGateway] = useState(null);
@@ -32,7 +33,7 @@ function SingleGateway() {
     return () => {
       controller.abort();
     };
-  }, [gateway, params]);
+  }, [params]);
   if (message) {
     return (
       <>
@@ -78,13 +79,18 @@ function SingleGateway() {
         </button>
       )}
       {addPeripheral && (
-        <AddPeripheral cancel={cancelPeripheralAdd} gatewayId={gateway?._id} />
+        <AddPeripheral
+          cancel={cancelPeripheralAdd}
+          gatewayId={gateway?._id}
+          updateGateway={(gateway) => {
+            setGateway(gateway);
+          }}
+        />
       )}
       <Table>
         <thead>
           <tr>
             <th>UID</th>
-            <th>Name</th>
             <th>Vendor</th>
             <th>Date created</th>
             <th>Status</th>
@@ -93,11 +99,13 @@ function SingleGateway() {
         <tbody>
           {gateway?.devices?.map((device) => (
             <tr key={device._id}>
-              <td>{device.uid}</td>
-              <td>{device.name}</td>
-              <td>{device.vendor}</td>
-              <td>{device.createdAt}</td>
-              <td>{device.status}</td>
+              <td>{device?.uid}</td>
+              <td>{device?.vendor}</td>
+              <td>
+                {device?.createdAt &&
+                  moment(device?.createdAt).format("MMMM Do YYYY, h:mm:ss a")}
+              </td>
+              <td>{device?.status}</td>
             </tr>
           ))}
         </tbody>

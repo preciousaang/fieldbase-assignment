@@ -4,15 +4,20 @@ import { Error, FGroup, FLabel, IField } from "../shared/styledComps";
 import api from "../api/axios";
 import { converApiErrors } from "../shared/utils";
 
-function AddPeripheral({ gatewayId, cancel }) {
+function AddPeripheral({ gatewayId, cancel, updateGateway }) {
   const onAddPeripheral = ({ vendor, status }, actions) => {
     api
       .post("/gateway/" + gatewayId + "/peripheral", { vendor, status })
-      .then((res) => {})
+      .then((res) => {
+        alert("Peripheral added");
+        updateGateway(res.data.gateway);
+        cancel();
+      })
       .catch((err) => {
         if (err?.response?.status === 422) {
           actions.setErrors(converApiErrors(err?.response?.data?.errors));
         }
+        console.log(err.response);
       });
   };
   return (
@@ -40,7 +45,7 @@ function AddPeripheral({ gatewayId, cancel }) {
                 <Error>{errors.status}</Error>
               )}
             </FGroup>
-            <button type="submit">Add Peripheral</button>
+            <button type="submit">Add Peripheral</button> &nbsp;
             <button type="button" onClick={() => cancel()}>
               Cancel
             </button>
