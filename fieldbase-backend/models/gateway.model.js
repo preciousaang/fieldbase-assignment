@@ -14,7 +14,7 @@ const deviceSchema = new Schema(
 );
 
 const gatewaySchema = new Schema({
-  vendor: String,
+  name: String,
   address: String,
   devices: [deviceSchema],
 });
