@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import api from "../api/axios";
 import AddPeripheral from "../components/AddPeripheral";
 import moment from "moment";
-import { ResponsiveTable, Table } from "../shared/styledComps";
+import { Error, ResponsiveTable, Success, Table } from "../shared/styledComps";
 
 function SingleGateway() {
   const [gateway, setGateway] = useState(null);
@@ -129,7 +129,13 @@ function SingleGateway() {
                   {device?.createdAt &&
                     moment(device?.createdAt).format("MMMM Do YYYY, h:mm:ss a")}
                 </td>
-                <td>{device?.status}</td>
+                <td>
+                  {device?.status === "online" ? (
+                    <Success>{device?.status}</Success>
+                  ) : (
+                    <Error>{device?.status}</Error>
+                  )}
+                </td>
                 <td>
                   <button
                     onClick={() => changeStatus(device?._id)}

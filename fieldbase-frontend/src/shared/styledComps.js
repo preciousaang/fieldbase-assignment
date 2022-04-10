@@ -12,6 +12,11 @@ export const Error = styled.p`
   font-size: 80%;
 `;
 
+export const Success = styled.p`
+  color: green;
+  font-size: 80%;
+`;
+
 export const Header = styled.h2`
   color: black;
 `;
